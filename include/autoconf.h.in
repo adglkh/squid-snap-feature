@@ -834,6 +834,9 @@
 /* Support shared memory features */
 #undef HAVE_SHM
 
+/* Enable squid compiled against snap world*/
+#undef USE_SNAP
+
 /* Define to 1 if you have the `sigaction' function. */
 #undef HAVE_SIGACTION
 

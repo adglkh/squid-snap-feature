@@ -871,7 +871,15 @@ mainReconfigureFinish(void *)
 
     storeDirOpenSwapLogs();
 
-    mimeInit(Config.mimeTablePathname);
+    if (getenv("SNAP")) {
+        char mimePathbuf[BUFSIZ];
+        assert(mimePathbuf != NULL);
+
+        snprintf(mimePathbuf, BUFSIZ, "%s/%s", getenv("SNAP"), Config.mimeTablePathname);
+        mimeInit(mimePathbuf);
+    } else {
+        mimeInit(Config.mimeTablePathname);
+    }
 
     if (unlinkdNeeded())
         unlinkdInit();
@@ -932,6 +940,8 @@ setEffectiveUser(void)
     return;
 #endif
 
+#if USE_SNAP
+#else
     if (geteuid() == 0) {
         debugs(0, DBG_CRITICAL, "Squid is not safe to run as root!  If you must");
         debugs(0, DBG_CRITICAL, "start Squid as root, then you must configure");
@@ -939,6 +949,7 @@ setEffectiveUser(void)
         debugs(0, DBG_CRITICAL, "'cache_effective_user' option in the config file.");
         fatal("Don't run Squid as root, set 'cache_effective_user'!");
     }
+#endif
 }
 
 /// changes working directory, providing error reporting
@@ -1100,7 +1111,15 @@ mainInitialize(void)
         statInit();
         storeInit();
         mainSetCwd();
-        mimeInit(Config.mimeTablePathname);
+        if (getenv("SNAP")) {
+            char mimePathbuf[BUFSIZ];
+            assert(mimePathbuf != NULL);
+
+            snprintf(mimePathbuf, BUFSIZ, "%s/%s", getenv("SNAP"), Config.mimeTablePathname);
+            mimeInit(mimePathbuf);
+        } else {
+            mimeInit(Config.mimeTablePathname);
+        }
         refreshInit();
 #if USE_DELAY_POOLS
         DelayPools::Init();

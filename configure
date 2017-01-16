@@ -990,6 +990,7 @@ with_aio
 enable_storeio
 enable_removal_policies
 enable_icmp
+enable_snap
 enable_delay_pools
 enable_esi
 with_expat
@@ -1783,6 +1784,7 @@ Optional Features:
                           Programmers Guide section 9.9 for details on how to
                           build your custom policy
   --enable-icmp           Enable ICMP pinging and Network Measurement
+  --enable-sanp           Enable to compile squid in snap world.
   --enable-delay-pools    Enable delay pools to limit bandwidth usage
   --enable-esi            Enable ESI for accelerators. Benefits from expat or
                           libxml2. Enabling ESI will cause squid reverse
@@ -21081,6 +21083,21 @@ if test "x$ac_cv_search_shm_open" != "xno" ; then
 
 $as_echo "#define HAVE_SHM 1" >>confdefs.h
 
+fi
+
+#disable shm_open due to
+#audit: type=1400 audit(1484275941.252:895): apparmor="DENIED" operation="unlink" profile="snap.squid.squid" name="/dev/shm/squid-cf__metadata.shm" pid=6168 comm="squid" requested_mask="d" denied_mask="d" fsuid=0 ouid=0
+
+# Check whether --enable-icmp was given.
+if test "${enable_snap+set}" = set; then :
+  enableval=$enable_snap;  if test "x$enableval" = "xyes" ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: SNAP enabled" >&5
+$as_echo "$as_me: SNAP enabled" >&6;}
+
+$as_echo "#define USE_SNAP 1" >>confdefs.h
+$as_echo "#define HAVE_SHM 0" >>confdefs.h
+
+  fi
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for DiskIO modules to be enabled" >&5

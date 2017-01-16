@@ -298,8 +298,13 @@ TemplateFile::tryLoadTemplate(const char *lang)
 
     char path[MAXPATHLEN];
     /* TODO: prep the directory path string to prevent snprintf ... */
-    snprintf(path, sizeof(path), "%s/%s/%s",
-             DEFAULT_SQUID_ERROR_DIR, lang, templateName.termedBuf());
+    if (getenv("SNAP")) {
+        snprintf(path, sizeof(path), "%s/%s/%s/%s",
+                  getenv("SNAP"), DEFAULT_SQUID_ERROR_DIR, lang, templateName.termedBuf());
+    } else {
+        snprintf(path, sizeof(path), "%s/%s/%s",
+                  DEFAULT_SQUID_ERROR_DIR, lang, templateName.termedBuf());
+    }
     path[MAXPATHLEN-1] = '\0';
 
     if (loadFromFile(path))

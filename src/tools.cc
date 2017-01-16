@@ -540,6 +540,8 @@ uniqueHostname(void)
 void
 leave_suid(void)
 {
+#if USE_SNAP
+#else
     debugs(21, 3, "leave_suid: PID " << getpid() << " called");
 
     if (Config.effectiveGroup) {
@@ -601,12 +603,15 @@ leave_suid(void)
         debugs(50, 2, "ALERT: prctl: " << xstrerror());
 
 #endif
+#endif
 }
 
 /* Enter a privilegied section */
 void
 enter_suid(void)
 {
+#if USE_SNAP
+#else
     debugs(21, 3, "enter_suid: PID " << getpid() << " taking root privileges");
 #if HAVE_SETRESUID
     if (setresuid((uid_t)-1, 0, (uid_t)-1) < 0)
@@ -621,6 +626,7 @@ enter_suid(void)
     if (Config.coredump_dir && prctl(PR_SET_DUMPABLE, 1) != 0)
         debugs(50, 2, "ALERT: prctl: " << xstrerror());
 
+#endif
 #endif
 }
 
@@ -758,6 +764,13 @@ writePidFile(void)
 
     old_umask = umask(022);
 
+    char path[MAXPATHLEN];
+    *path = 0;
+    if (getenv("SNAP_DATA")) {
+        snprintf(path, sizeof(path)-1, "%s/%s", getenv("SNAP_DATA"), f);
+        f = path;
+    }
+
     fd = file_open(f, O_WRONLY | O_CREAT | O_TRUNC | O_TEXT);
 
     umask(old_umask);
@@ -794,6 +807,13 @@ readPidFile(void)
         chroot_f = (char *)xmalloc(strlen(Config.chroot_dir) + 1 + strlen(f) + 1);
         snprintf(chroot_f, len, "%s/%s", Config.chroot_dir, f);
         f = chroot_f;
+    }
+
+    char path[MAXPATHLEN];
+    *path = 0;
+    if (getenv("SNAP_DATA")) {
+        snprintf(path, sizeof(path)-1, "%s/%s", getenv("SNAP_DATA"), f);
+        f = path;
     }
 
     pid_fp = fopen(f, "r");

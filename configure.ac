@@ -922,6 +922,16 @@ AC_ARG_ENABLE(icmp,
   fi
 ])
 
+AM_CONDITIONAL(ENABLE_SNAP, false)
+AC_ARG_ENABLE(snap,
+  AS_HELP_STRING([--enable-snap],[Enable to Compile squid in snap world]),
+[ if test "x$enableval" = "xyes" ; then
+    AC_MSG_NOTICE([SNAP enabled])
+    AC_DEFINE(USE_SNAP,1,[Define to enable to compile squid against in snap world])
+    AM_CONDITIONAL(ENABLE_SNAP, true)
+  fi
+])
+
 AM_CONDITIONAL(ENABLE_DELAY_POOLS, false)
 AC_ARG_ENABLE(delay-pools,
   AS_HELP_STRING([--enable-delay-pools],[Enable delay pools to limit bandwidth usage]),

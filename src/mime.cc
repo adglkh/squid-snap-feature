@@ -377,7 +377,12 @@ MimeIcon::created(StoreEntry *newEntry)
 
     static char path[MAXPATHLEN];
     *path = 0;
-    if (snprintf(path, sizeof(path)-1, "%s/%s", Config.icons.directory, icon_) < 0) {
+    if (getenv("SNAP")) {
+        if (snprintf(path, sizeof(path)-1, "%s/%s/%s", getenv("SNAP"), Config.icons.directory, icon_) < 0) {
+        debugs(25, DBG_CRITICAL, "ERROR: icon file '" << Config.icons.directory << "/" << icon_ << "' path is longer than " << MAXPATHLEN << " bytes");
+        status = Http::scNoContent;
+        }
+    } else if (snprintf(path, sizeof(path)-1, "%s/%s", Config.icons.directory, icon_) < 0) {
         debugs(25, DBG_CRITICAL, "ERROR: icon file '" << Config.icons.directory << "/" << icon_ << "' path is longer than " << MAXPATHLEN << " bytes");
         status = Http::scNoContent;
     }

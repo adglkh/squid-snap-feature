@@ -4038,6 +4038,10 @@ requirePathnameExists(const char *name, const char *path)
         snprintf(pathbuf, BUFSIZ, "%s/%s", Config.chroot_dir, path);
         path = pathbuf;
     }
+    if (getenv("SNAP")) {
+        snprintf(pathbuf, BUFSIZ, "%s/%s", getenv("SNAP"), path);
+        path = pathbuf;
+    }
 
     if (stat(path, &sb) < 0) {
         debugs(0, DBG_CRITICAL, (opt_parse_cfg_only?"FATAL: ":"ERROR: ") << name << " " << path << ": " << xstrerror());
