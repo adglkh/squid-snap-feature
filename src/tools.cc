@@ -636,6 +636,8 @@ enter_suid(void)
 void
 no_suid(void)
 {
+#if USE_SNAP
+#else
     uid_t uid;
     leave_suid();
     uid = geteuid();
@@ -646,6 +648,7 @@ no_suid(void)
 
     if (setuid(uid) < 0)
         debugs(50, DBG_IMPORTANT, "ERROR: no_suid: setuid(" << uid << "): " << xstrerror());
+#endif
 
     restoreCapabilities(false);
 
